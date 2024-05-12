@@ -23,7 +23,7 @@ function addData(text) {
 
 function getDataAndSend() {
     let db;
-    const request = indexedDB.open('my-db');
+    const request = indexedDB.open('waterControll');
     request.onerror = (event) => {
         throw new Error(event);
     };
@@ -35,17 +35,13 @@ function getDataAndSend() {
 }
 
 function getData(db) {
-    const transaction = db.transaction(['test-store']);
-    const objectStore = transaction.objectStore('test-store');
-    console.log(`Objectstore: ${objectStore}`);
-    const request = objectStore.get('text');
-    console.log(request);
+    const transaction = db.transaction(['background-sync-store']);
+    const objectStore = transaction.objectStore('background-sync-store');
+    const request = objectStore.get('index');
     request.onerror = (event) => {
         throw new Error(event);
     };
     request.onsuccess = (event) => {
-        // Do something with the request.result!
         addData(request.result);
-        console.log('Testtext: ' + request.result);
     };
 }

@@ -13,8 +13,6 @@ export class AppComponent {
 
     constructor(private http: HttpClient, private indexedDBService: IndexedDbService) {}
 
-    ngOnInit() {}
-
     postData() {
         const obj = {
             text: this.text
@@ -27,7 +25,6 @@ export class AppComponent {
                 this.indexedDBService
                     .addUser(obj.text)
                     .then(() => {
-                        console.log('Gleich wird BackgroundSync ausgeführt');
                         this.backgroundSync();
                     })
                     .catch(console.log);
@@ -36,7 +33,6 @@ export class AppComponent {
     }
 
     backgroundSync() {
-        console.log('BackgroundSync works!');
         navigator.serviceWorker.ready
             .then((swRegistration: any) => swRegistration.sync.register('post-data'))
             .catch(console.log);

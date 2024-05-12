@@ -11,28 +11,34 @@ export class IndexedDbService {
     }
 
     async connectToDb() {
-        this.db = await openDB<MyDB>('my-db', 1, {
+        this.db = await openDB<MyDB>('waterControll', 1, {
             upgrade(db) {
-                db.createObjectStore('test-store');
+                db.createObjectStore('background-sync-store');
             }
         });
     }
 
     async addUser(text: string) {
-        const index = await this.db.getAll('test-store');
-        const key = `text-${index.length}`;
-        console.log(key)
-        console.log(`${key}: ${text} wurde hinzugefügt!`)
-        return this.db.put('test-store', text, key);
+        const items = await this.db.getAll('background-sync-store');
+        let length = items.length;
+        // Also the index value takes one place, so it is more easy to start at 1
+        if (length === 0) {
+            length += 1;
+        }
+        const keyName = length.toString();
+        console.log(`${keyName}: ${text} wurde hinzugefügt!`);
+        await this.db.put('background-sync-store', text, keyName);
+        await this.db.put('background-sync-store', keyName, 'index');
+        return Promise.resolve();
     }
 
     deleteUser(key: string) {
-        return this.db.delete('test-store', key);
+        return this.db.delete('background-sync-store', key);
     }
 }
 
 interface MyDB extends DBSchema {
-    'test-store': {
+    'background-sync-store': {
         key: string;
         value: string;
     };
